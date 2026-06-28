@@ -22,12 +22,25 @@ export function isLocale(value: string | undefined): value is Locale {
 
 export function getLocalePath(locale: Locale, path = '/') {
   const normalized = path.startsWith('/') ? path : `/${path}`;
-  if (locale === defaultLocale) return normalized;
-  return `/${locale}${normalized === '/' ? '/' : normalized}`;
+  const localized = locale === defaultLocale ? normalized : `/${locale}${normalized === '/' ? '/' : normalized}`;
+  const base = import.meta.env.BASE_URL || '/';
+  if (base === '/') return localized;
+  return `${base.replace(/\/$/, '')}${localized}`.replace(/\/+/g, '/');
+}
+
+function stripBasePath(path: string) {
+  const base = import.meta.env.BASE_URL || '/';
+  if (base === '/') return path;
+
+  const normalizedBase = base.replace(/\/$/, '');
+  if (path === normalizedBase) return '/';
+  if (path.startsWith(`${normalizedBase}/`)) return path.slice(normalizedBase.length) || '/';
+  return path;
 }
 
 export function switchLocalePath(targetLocale: Locale, currentPath: string) {
-  const normalized = currentPath.startsWith('/') ? currentPath : `/${currentPath}`;
+  const withoutBase = stripBasePath(currentPath);
+  const normalized = withoutBase.startsWith('/') ? withoutBase : `/${withoutBase}`;
   const segments = normalized.split('/').filter(Boolean);
   const currentLocale = isLocale(segments[0]) ? segments[0] : defaultLocale;
   const rest = currentLocale === defaultLocale ? segments : segments.slice(1);

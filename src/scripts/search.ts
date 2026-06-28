@@ -19,6 +19,7 @@ const loading = document.getElementById('search-loading');
 const noResults = document.getElementById('search-no-results');
 const results = document.getElementById('search-results');
 const locale = modal?.dataset.locale || 'en';
+const base = import.meta.env.BASE_URL || '/';
 let fuse: Fuse<SearchItem> | null = null;
 let indexPromise: Promise<SearchItem[]> | null = null;
 
@@ -54,7 +55,7 @@ async function ensureIndex() {
   if (!indexPromise) {
     hide(empty);
     show(loading);
-    indexPromise = fetch('/api/search.json').then((response) => response.json());
+    indexPromise = fetch(`${base}api/search.json`).then((response) => response.json());
   }
   const data = await indexPromise;
   if (!fuse) {

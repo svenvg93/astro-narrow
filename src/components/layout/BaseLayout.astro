@@ -36,6 +36,9 @@ const {
 
 const pageTitle = title === siteConfig.name ? title : `${title} | ${siteConfig.name}`;
 const htmlLang = localeMeta[locale].htmlLang;
+const assetBase = import.meta.env.BASE_URL || '/';
+const faviconSvg = `${assetBase.replace(/\/?$/, '/')}favicon.svg`;
+const faviconIco = `${assetBase.replace(/\/?$/, '/')}favicon.ico`;
 const themeInit = `
 (() => {
   const root = document.documentElement;
@@ -56,8 +59,8 @@ const themeInit = `
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href={faviconSvg} />
+    <link rel="icon" href={faviconIco} />
     <title>{pageTitle}</title>
     <script is:inline set:html={themeInit}></script>
   </head>

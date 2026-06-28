@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { getLocaleFromId, stripLocaleFromId, type Locale } from '../../config/i18n';
+import { getLocaleFromId, getLocalePath, stripLocaleFromId, type Locale } from '../../config/i18n';
 
 export type ContentType = 'posts' | 'projects' | 'pages';
 
@@ -31,7 +31,7 @@ export function localizedEntryPath(collection: ContentType, entry: CollectionEnt
   const locale = entryLocale(entry);
   const base = collection === 'pages' ? '' : `/${collection}`;
   const path = `${base}/${slug}/`.replace(/\/+/g, '/');
-  return locale === 'en' ? path : `/${locale}${path}`;
+  return getLocalePath(locale, path);
 }
 
 export function formatDate(date: Date | undefined, locale: Locale) {
