@@ -1,5 +1,4 @@
 import type { Locale } from './i18n';
-import { contentTypes } from './content';
 
 export const siteConfig = {
   name: 'Astro Narrow',
@@ -30,12 +29,8 @@ export const siteConfig = {
       enabled: true
     }
   },
-  nav: [
-    { label: contentTypes.posts.label, href: contentTypes.posts.path, icon: contentTypes.posts.icon },
-    { label: contentTypes.projects.label, href: contentTypes.projects.path, icon: contentTypes.projects.icon },
-    { label: { en: 'Archives', 'zh-cn': '归档' }, href: '/archives/', icon: 'lucide:archive' },
-    { label: { en: 'Tags', 'zh-cn': '标签' }, href: '/tags/', icon: 'lucide:tags' }
-  ],
+  nav: ['posts', 'projects', 'archives', 'tags'],
+  footerNav: ['archives', 'tags'],
   comments: {
     enabled: false,
     provider: 'giscus',
@@ -102,7 +97,8 @@ export const siteConfig = {
       enabled: boolean;
     };
   };
-  nav: Array<{ label: Record<Locale, string>; href: string; icon: string }>;
+  nav: Array<string | { label: Record<Locale, string>; href: string; icon: string }>;
+  footerNav: Array<string | { label: Record<Locale, string>; href: string; icon: string }>;
   comments: Record<string, any>;
   analytics: Record<string, any>;
   gallery: Record<string, any>;

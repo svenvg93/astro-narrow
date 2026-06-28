@@ -2,22 +2,25 @@
 import { Icon } from 'astro-icon/components';
 import type { CollectionEntry } from 'astro:content';
 import type { Locale } from '../../config/i18n';
-import { getLocalePath } from '../../config/i18n';
+import type { ContentTypeId } from '../../config/content';
 import { siteConfig } from '../../config/site';
-import { useTranslations } from '../../i18n/utils';
 import EntryList from '../content/EntryList.astro';
+import ViewAll from '../ui/ViewAll.astro';
+
+interface HomeSection {
+  id: ContentTypeId;
+  title: string;
+  href: string;
+  entries: Array<CollectionEntry<any>>;
+}
 
 interface Props {
   locale: Locale;
-  posts: Array<CollectionEntry<'posts'>>;
-  projects: Array<CollectionEntry<'projects'>>;
+  sections: HomeSection[];
 }
 
-const { locale, posts, projects } = Astro.props;
-const t = useTranslations(locale);
+const { locale, sections } = Astro.props;
 const { author } = siteConfig;
-const postHref = getLocalePath(locale, '/posts/');
-const projectHref = getLocalePath(locale, '/projects/');
 ---
 
 <section class="py-8 sm:py-10">
@@ -55,20 +58,14 @@ const projectHref = getLocalePath(locale, '/projects/');
   </div>
 </section>
 
-<section class="py-8">
-  <div class="mb-2 flex items-end justify-between gap-4">
-    <h2 class="text-2xl font-semibold">{t('home.recentPosts')}</h2>
-    <a href={postHref} class="text-sm text-muted-foreground hover:text-primary">{t('home.viewAll')}</a>
-  </div>
-  <EntryList entries={posts} collection="posts" locale={locale} />
-</section>
-
-{projects.length > 0 && (
-  <section class="py-8">
-    <div class="mb-2 flex items-end justify-between gap-4">
-      <h2 class="text-2xl font-semibold">{t('home.featuredProjects')}</h2>
-      <a href={projectHref} class="text-sm text-muted-foreground hover:text-primary">{t('home.viewAll')}</a>
-    </div>
-    <EntryList entries={projects} collection="projects" locale={locale} />
-  </section>
-)}
+{sections.map((section) => (
+  section.entries.length > 0 && (
+    <section class="py-8">
+      <div class="mb-3 flex items-end justify-between gap-4">
+        <h2 class="text-2xl font-semibold">{section.title}</h2>
+        <ViewAll href={section.href} locale={locale} />
+      </div>
+      <EntryList entries={section.entries} collection={section.id} locale={locale} />
+    </section>
+  )
+))}
