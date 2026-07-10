@@ -48,7 +48,7 @@ export const siteConfig = {
 :::tab{title="Navigation"}
 ```ts
 export const siteConfig = {
-  nav: ['posts', 'projects', 'archives'],
+  nav: ['posts', 'series', 'projects', 'archives'],
   footerNav: ['archives']
 }
 ```
@@ -109,7 +109,7 @@ Posts use Astro content collection fields. Keep frontmatter small and predictabl
 | `comments` | Per-entry comments |
 | `math`, `mermaid`, `gallery`, `lightbox` | Feature hints |
 
-Categories and tags are discovered automatically from published posts in the current locale. Projects keep their own tags for cards and search, but they do not appear in Archives. Project entries also support `featured` and `links`.
+Categories and tags are discovered automatically from published posts in the current locale. Ordered reading paths are defined separately under `src/content/series/<locale>/`, so posts do not repeat Series names or chapter numbers. Projects keep their own tags for cards and search, but they do not appear in Archives. Project entries also support `featured` and `links`.
 
 ```yaml
 links:

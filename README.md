@@ -8,9 +8,10 @@ English is the default language. Simplified Chinese is included as an example lo
 
 ## Features
 
-- Astro-native content collections for posts, projects, and pages.
+- Astro-native content collections for posts, projects, pages, and typed series reading paths.
 - Configurable content types, card styles, list layouts, and home sections.
 - Post categories and tags with shareable filtering on the Archives page.
+- Ordered article series defined through Astro content references.
 - Markdown alerts, tabs, math, Mermaid, galleries, lightbox, and Expressive Code.
 - Theme tokens, dark mode, search, dock, table of contents, RSS, and sitemap.
 - GitHub Pages workflow for publishing an example site.
@@ -34,7 +35,7 @@ pnpm build
 Navigation can use built-in keys or custom items:
 
 ```ts
-nav: ['posts', 'projects', 'archives'],
+nav: ['posts', 'series', 'projects', 'archives'],
 footerNav: ['archives']
 ```
 
@@ -48,6 +49,25 @@ tags: [Astro, Markdown]
 ```
 
 Projects keep their own `tags` for cards and search, but do not appear in Archives. Regular pages do not have taxonomy fields.
+
+## Ordered Series
+
+Series are curated reading paths rather than taxonomy terms. Define each path as Markdown under `src/content/series/<locale>/` and list typed post references in reading order:
+
+```yaml
+---
+title: Astro Narrow Practical Guide
+description: From content authoring to deployment.
+chapters:
+  - en/authoring-content-collections
+  - en/configure-series
+  - en/deploy-github-pages
+---
+```
+
+The array position is the chapter order. Published series require at least two same-locale, non-draft posts; duplicate references and membership in multiple series fail the build. `/series/` lists reading paths, while each series page renders its introduction and ordered chapters. Series chapters show their position above the post title and use chapter-aware previous/next navigation.
+
+Series is a built-in navigation key. Remove `'series'` from `siteConfig.nav` when the site does not need a primary Series entry. Archives and RSS remain posts-only.
 
 ## Markdown Tabs
 

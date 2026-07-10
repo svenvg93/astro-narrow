@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
 import { entryLocale, localizedEntryPath, type ContentType } from '../../lib/content/entries';
+import { localizedSeriesPath, seriesLocale } from '../../lib/content/series';
 
 export async function GET() {
   const collections: ContentType[] = ['posts', 'projects', 'pages'];
@@ -20,6 +21,21 @@ export async function GET() {
         content: entry.body.slice(0, 8000)
       });
     }
+  }
+
+  const series = await getCollection('series', ({ data }) => !data.draft);
+  for (const entry of series) {
+    items.push({
+      title: entry.data.title,
+      description: entry.data.description || '',
+      url: localizedSeriesPath(entry),
+      lang: seriesLocale(entry),
+      type: 'series',
+      tags: [],
+      categories: [],
+      date: '',
+      content: entry.body.slice(0, 8000)
+    });
   }
 
   return new Response(JSON.stringify(items), {

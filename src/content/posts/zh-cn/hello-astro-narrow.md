@@ -48,7 +48,7 @@ export const siteConfig = {
 :::tab{title="导航"}
 ```ts
 export const siteConfig = {
-  nav: ['posts', 'projects', 'archives'],
+  nav: ['posts', 'series', 'projects', 'archives'],
   footerNav: ['archives']
 }
 ```
@@ -109,7 +109,7 @@ export const contentTypes = {
 | `comments` | 单篇评论开关 |
 | `math`, `mermaid`, `gallery`, `lightbox` | 功能提示 |
 
-分类和标签会从当前语言的已发布文章中自动发现。项目保留自己的标签，用于卡片和搜索，但不会出现在归档中。项目内容还支持 `featured` 和 `links`。
+分类和标签会从当前语言的已发布文章中自动发现。有序阅读路径单独定义在 `src/content/series/<locale>/`，文章无需重复填写 Series 名称或章节序号。项目保留自己的标签，用于卡片和搜索，但不会出现在归档中。项目内容还支持 `featured` 和 `links`。
 
 ```yaml
 links:

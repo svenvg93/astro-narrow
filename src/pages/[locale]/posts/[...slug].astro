@@ -10,6 +10,7 @@ import { contentTypes } from '../../../config/content';
 import { getLocalePath, locales, type Locale } from '../../../config/i18n';
 import { siteConfig } from '../../../config/site';
 import { adjacentEntries, getLocalizedEntries, entrySlug, relatedPosts } from '../../../lib/content/entries';
+import { getSeriesContext, localizedSeriesPath } from '../../../lib/content/series';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -23,7 +24,8 @@ export async function getStaticPaths() {
 const { entry, locale } = Astro.props as any as { entry: any; locale: Locale };
 const { Content, headings } = await render(entry);
 const posts = await getLocalizedEntries('posts', locale);
-const adjacent = adjacentEntries(posts, entry);
+const seriesContext = await getSeriesContext(entry);
+const adjacent = seriesContext || adjacentEntries(posts, entry);
 const related = relatedPosts(posts, entry, siteConfig.post.relatedCount);
 ---
 
@@ -48,11 +50,17 @@ const related = relatedPosts(posts, entry, siteConfig.post.relatedCount);
     locale={locale}
     categories={entry.data.categories}
     tags={entry.data.tags}
+    series={seriesContext ? {
+      title: seriesContext.series.entry.data.title,
+      href: localizedSeriesPath(seriesContext.series.entry),
+      position: seriesContext.position,
+      total: seriesContext.series.chapters.length
+    } : undefined}
   />
   <article class="prose mb-12 max-w-none">
     <Content />
   </article>
   <PostLicense locale={locale} />
-  <PostNavigation previous={adjacent.previous} next={adjacent.next} locale={locale} />
+  <PostNavigation previous={adjacent.previous} next={adjacent.next} locale={locale} kind={seriesContext ? 'series' : 'post'} />
   <RelatedPosts posts={related} locale={locale} />
 </BaseLayout>

@@ -1,4 +1,4 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const taxonomyTerm = z.string().trim().min(1);
@@ -49,8 +49,20 @@ const pages = defineCollection({
   })
 });
 
+const series = defineCollection({
+  loader: glob({ base: './src/content/series', pattern: '**/*.{md,mdx}' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    draft: z.boolean().default(false),
+    lang: z.enum(['en', 'zh-cn']).optional(),
+    chapters: z.array(reference('posts')).min(2)
+  })
+});
+
 export const collections = {
   posts,
   projects,
-  pages
+  pages,
+  series
 };
