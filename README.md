@@ -1,20 +1,17 @@
 # Astro Narrow
 
+A multi-color scheme Astro theme migrated from Hugo Narrow while retaining the overall Narrow design.
+
 [English](README.md) · [简体中文](README.zh-CN.md) · [Hugo Narrow](https://github.com/tom2almighty/hugo-narrow)
-
-Astro Narrow is a content-focused Astro theme inspired by Hugo Narrow. It keeps a compact reading layout while using Astro-native building blocks: content collections, Astro routes, Astro components, and remark/rehype Markdown transforms.
-
-English is the default language. Simplified Chinese is included as an example locale.
 
 ## Features
 
-- Astro-native content collections for posts, projects, pages, and typed series reading paths.
-- Configurable content types, card styles, list layouts, and home sections.
-- Post categories and tags with shareable filtering on the Archives page.
-- Ordered article series defined through Astro content references.
-- Markdown alerts, tabs, math, Mermaid, galleries, lightbox, and Expressive Code.
-- Theme tokens, dark mode, search, dock, table of contents, RSS, and sitemap.
-- GitHub Pages workflow for publishing an example site.
+- Multiple color palettes
+- Table of contents
+- Search
+- Multiple languages
+- Math and diagrams
+- Multiple gallery layouts
 
 ## Quick Start
 
@@ -26,48 +23,89 @@ pnpm build
 
 ## Main Config Files
 
-- `src/config/site.ts`: site metadata, author profile, navigation, layout width, comments, analytics, gallery, license.
-- `src/config/content.ts`: content type labels, paths, card style, list layout, home sections.
-- `src/config/i18n.ts`: locales and localized paths.
-- `src/config/theme.ts`: theme switcher options.
-- `src/content.config.ts`: Astro content collection schemas.
+| File                    | Purpose                                        | Common options                                                                 |
+| ----------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| `src/config/site.ts`    | Site, author, and global features              | `contentWidth`, `nav`, `footerNav`, `comments`, `analytics`, `gallery`, `post` |
+| `src/config/content.ts` | Lists and home sections for Posts and Projects | `cardStyle`, `listLayout`, `gridColumns`, `home.enabled`, `home.limit`         |
+| `src/config/i18n.ts`    | Locales and display names                      | `defaultLocale`, `locales`, `localeMeta`                                       |
+| `src/config/theme.ts`   | Palettes available in the Dock                 | `themes`                                                                       |
+| `src/content.config.ts` | Available frontmatter fields                   | Update when adding or changing content fields                                  |
 
-Navigation can use built-in keys or custom items:
+`cardStyle` accepts `article`, `showcase`, or `compact`; `listLayout` accepts `stack` or `grid`; `gridColumns` accepts `1`, `2`, or `3`.
+
+When adding a locale, also update `i18n.locales` in `astro.config.mjs` and the allowed `lang` values in `src/content.config.ts`.
+
+Navigation supports `posts`, `series`, `projects`, and `archives`:
 
 ```ts
-nav: ['posts', 'series', 'projects', 'archives'],
-footerNav: ['archives']
+nav: ["posts", "series", "projects", "archives"],
+footerNav: ["archives"],
+```
+
+A custom item requires localized labels, a URL, and a Lucide icon:
+
+```ts
+{
+  label: { en: "Docs", "zh-cn": "文档" },
+  href: "https://example.com/docs/",
+  icon: "lucide:book-open",
+}
 ```
 
 ## Content Taxonomy
 
-Posts support locale-local `categories` and `tags`. The Archives page discovers terms from published posts and filters them with shareable `category` and `tag` query parameters; no taxonomy registry or standalone tag pages are required.
+Posts use `categories` and `tags`, both as string arrays:
 
 ```yaml
+---
+title: Writing with Astro Narrow
+pubDate: 2026-07-10
 categories: [Guides]
 tags: [Astro, Markdown]
+---
 ```
 
-Projects keep their own `tags` for cards and search, but do not appear in Archives. Regular pages do not have taxonomy fields.
+- `categories`: broad content groups such as `Guides` or `Essays`.
+- `tags`: topics or technologies covered by the post; multiple values are allowed.
+- Projects only use `tags`.
+- Pages do not use `categories` or `tags`.
+
+Archives filter URLs can be shared directly:
+
+```text
+/archives/?category=Guides
+/archives/?tag=Astro
+/archives/?category=Guides&tag=Astro
+```
 
 ## Ordered Series
 
-Series are curated reading paths rather than taxonomy terms. Define each path as Markdown under `src/content/series/<locale>/` and list typed post references in reading order:
+Create a Markdown file under `src/content/series/<locale>/`. Its filename becomes the Series URL slug, and its Markdown body can provide an introduction.
 
 ```yaml
 ---
 title: Astro Narrow Practical Guide
 description: From content authoring to deployment.
+draft: false
 chapters:
   - en/authoring-content-collections
   - en/configure-series
   - en/deploy-github-pages
 ---
+Follow the chapters in order to move from writing content to deploying the site.
 ```
 
-The array position is the chapter order. Published series require at least two same-locale, non-draft posts; duplicate references and membership in multiple series fail the build. `/series/` lists reading paths, while each series page renders its introduction and ordered chapters. Series chapters show their position above the post title and use chapter-aware previous/next navigation.
+| Option        | Required | Purpose                                        |
+| ------------- | -------- | ---------------------------------------------- |
+| `title`       | Yes      | Series title                                   |
+| `description` | No       | Summary shown on index and detail pages        |
+| `chapters`    | Yes      | Post IDs in reading order; at least two        |
+| `draft`       | No       | Set to `true` to hide the public Series        |
+| `lang`        | No       | Usually inferred from the `<locale>` directory |
 
-Series is a built-in navigation key. Remove `'series'` from `siteConfig.nav` when the site does not need a primary Series entry. Archives and RSS remain posts-only.
+A Post ID is the path relative to `src/content/posts/`, without its extension. A Series and all its chapters must use the same locale, chapters must be published, and a post can belong to only one public Series. Reorder the `chapters` array without changing post URLs.
+
+`/series/` lists all Series, and `/series/<slug>/` shows the introduction and chapter list. Remove `"series"` from `siteConfig.nav` when a primary navigation entry is not needed.
 
 ## Markdown Tabs
 
@@ -76,19 +114,23 @@ Tabs use `remark-directive` syntax. The outer container uses four colons because
 ````md
 ::::tabs
 :::tab{title="site.ts"}
+
 ```ts
 export const siteConfig = {
-  contentWidth: '56rem'
-}
+  contentWidth: "56rem",
+};
 ```
+
 :::
 
 :::tab{title="content.ts"}
+
 ```ts
 export const contentTypes = {
-  posts: { listLayout: 'stack' }
-}
+  posts: { listLayout: "stack" },
+};
 ```
+
 :::
 ::::
 ````
@@ -99,8 +141,6 @@ The example workflow is in `.github/workflows/deploy.yml`. Before the first depl
 
 The workflow sets `ASTRO_SITE` and `ASTRO_BASE` automatically for both user pages and project pages.
 
-## Development Notes
+## License
 
-- Keep changes Astro-native. Do not add Hugo compatibility layers.
-- Prefer Markdown-native authoring and remark/rehype transforms over custom HTML snippets.
-- Keep user-facing options in config files instead of requiring users to import internal code.
+This project is licensed under the [GNU General Public License Version 3](LICENSE).
